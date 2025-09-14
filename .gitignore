@@ -20,3 +20,4 @@ outputs/Spotify_Wrapped_Report.md
 
 # Streamlit cache
 .streamlit/cache/
+!streamlit-spotify-insights/db/spotify.db
