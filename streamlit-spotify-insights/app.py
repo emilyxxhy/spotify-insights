@@ -378,24 +378,55 @@ with tabs[4]:
 with tabs[5]:
     st.subheader("All Charts in outputs/")
     OUT = ROOT.parent / "outputs"
+    (OUT / "report_images").mkdir(parents=True, exist_ok=True)
+
+    def _build_outputs_now():
+        import runpy, traceback
+        SRC = ROOT.parent / "src"
+        logs = []
+        for script in ["eda_charts.py", "eda_charts_plus.py", "build_report.py"]:
+            try:
+                ns = runpy.run_path(str(SRC / script))
+                if "main" in ns:
+                    ns["main"]()
+                logs.append(f"✅ Ran {script}")
+            except Exception as e:
+                logs.append(f"⚠️ {script} failed: {e}")
+                traceback.print_exc()
+        return "\n".join(logs)
+
+    # If nothing is there yet, offer to build
     imgs = sorted(OUT.glob("*.png")) + sorted((OUT / "report_images").glob("*.png"))
     if not imgs:
-        st.info("No .png charts found in outputs/. Run your chart scripts first.")
-    else:
-        for p in imgs:
-            st.markdown(f"**{p.relative_to(OUT)}**")
-            st.image(str(p), use_container_width=True)
-            st.divider()
+        st.info("No charts found yet. Click the button to generate them in the cloud.")
+        if st.button("🔧 Build charts now"):
+            msg = _build_outputs_now()
+            st.success("Build finished.")
+            st.code(msg, language="bash")
+            imgs = sorted(OUT.glob("*.png")) + sorted((OUT / "report_images").glob("*.png"))
 
-        # Download everything as a zip (charts + CSV + report)
-        buf = io.BytesIO()
-        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
-            for p in OUT.glob("*.png"): z.write(p, p.name)
-            for p in (OUT/"report_images").glob("*.png"): z.write(p, f"report_images/{p.name}")
-            for p in OUT.glob("*.csv"): z.write(p, p.name)
-            rp = OUT / "Spotify_Wrapped_Report.md"
-            if rp.exists(): z.write(rp, rp.name)
-        buf.seek(0)
-        st.download_button("⬇️ Download all outputs (.zip)", buf, "spotify_outputs.zip", mime="application/zip")
+    # Manual rebuild button (even if some exist)
+    if st.button("↻ Rebuild charts"):
+        msg = _build_outputs_now()
+        st.success("Rebuild finished.")
+        st.code(msg, language="bash")
+        imgs = sorted(OUT.glob("*.png")) + sorted((OUT / "report_images").glob("*.png"))
 
-st.caption("Tip: you can keep your DB in the app's /db folder or the parent project's /db — both work.")
+    if not imgs:
+        st.stop()
+
+    for p in imgs:
+        st.markdown(f"**{p.relative_to(OUT)}**")
+        st.image(str(p), use_container_width=True)
+        st.divider()
+
+    # Download everything as a zip
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for p in OUT.glob("*.png"): z.write(p, p.name)
+        for p in (OUT/"report_images").glob("*.png"): z.write(p, f"report_images/{p.name}")
+        for p in OUT.glob("*.csv"): z.write(p, p.name)
+        rp = OUT / "Spotify_Wrapped_Report.md"
+        if rp.exists(): z.write(rp, rp.name)
+    buf.seek(0)
+    st.download_button("⬇️ Download all outputs (.zip)", buf, "spotify_outputs.zip", mime="application/zip")
