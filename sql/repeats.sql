@@ -1,0 +1,2 @@
+WITH totals AS (SELECT COUNT(*) AS plays, COUNT(DISTINCT trackName) AS distinct_tracks FROM listens)
+SELECT plays, distinct_tracks, ROUND(1.0*plays/distinct_tracks,2) AS avg_plays_per_track FROM totals;

@@ -1,0 +1,78 @@
+# 🎧 Spotify Wrapped — Personal Report
+
+**Data window:** {{ date_range }}
+**Total listening hours:** {{ total_hours|round(2) }}  
+**Total plays:** {{ total_plays }} · **Unique artists:** {{ unique_artists }} · **Unique tracks:** {{ unique_tracks }}
+
+---
+
+## 🔝 Top Artists (by hours)
+{{ top_artists_table }}
+
+## 🔝 Top Tracks (by hours)
+{{ top_tracks_table }}
+
+**Loyalty vs Explorer:** HHI = {{ hhi|round(3) }} → **{{ loyalty_label }}**  
+*(Lower HHI = more variety; >0.12 = concentrated)*
+
+---
+
+## ⏰ Time & Habits
+- **Peak hours:** {{ peak_hours }} (local clock)
+- **Top weekdays:** {{ top_weekdays }}
+- **Monthly trend:** see chart below.
+
+![Monthly Trend](report_images/monthly_hours.png)
+
+![Hours by Hour](report_images/by_hour.png)
+
+![Hours by Weekday](report_images/by_weekday.png)
+
+---
+
+## ⏩ Skips & Repeats
+- **Plays <30s:** {{ pct_lt_30s }}%
+- **Plays <60s:** {{ pct_lt_60s }}%
+- **Avg plays per track:** {{ avg_plays_per_track }}
+
+**Most Replayed Tracks (>=3 sessions):**
+{{ top_replays_table }}
+
+---
+
+## 📅 Artist Binges
+Artists dominating a month (≥30 minutes in that month). Sorted by share %.
+
+{{ binges_table }}
+
+---
+
+## 🔄 What-if
+If top artist **“{{ top_artist_name }}”** is removed: new #1 is **{{ new_top_artist }}**.
+
+---
+
+## 🧭 Discovery
+Cumulative count of unique artists over time.
+
+![Discovery Cumulative](report_images/discovery_cumulative.png)
+
+---
+
+{% if genre_available %}
+## 🎶 Genres (optional enrichment)
+**Top genres by hours (weighted by artist's listed genres):**
+
+{{ top_genres_table }}
+{% else %}
+> _Genre section skipped_: add `cache/artist_genres.csv` to enable.
+{% endif %}
+
+---
+
+## 🎯 Guilty Pleasures (fun)
+Tracks with **many sessions** but **low total time**.
+
+{{ guilty_table }}
+
+*Report generated locally with `src/build_report.py`.*

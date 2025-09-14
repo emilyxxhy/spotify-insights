@@ -1,0 +1,6 @@
+SELECT COUNT(*) AS total_plays,
+SUM(CASE WHEN msPlayed < 30000 THEN 1 ELSE 0 END) AS plays_lt_30s,
+ROUND(100.0 * SUM(CASE WHEN msPlayed < 30000 THEN 1 ELSE 0 END)/COUNT(*),1) AS pct_lt_30s,
+SUM(CASE WHEN msPlayed < 60000 THEN 1 ELSE 0 END) AS plays_lt_60s,
+ROUND(100.0 * SUM(CASE WHEN msPlayed < 60000 THEN 1 ELSE 0 END)/COUNT(*),1) AS pct_lt_60s
+FROM listens;

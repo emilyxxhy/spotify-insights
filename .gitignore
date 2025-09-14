@@ -1,0 +1,22 @@
+# OS / editor
+.DS_Store
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Data (personal)
+db/spotify.db
+uploaded.db
+cache/*.csv
+
+# Generated outputs (re-create locally)
+outputs/*.png
+outputs/*.csv
+outputs/Spotify_Wrapped_Report.md
+
+# Streamlit cache
+.streamlit/cache/

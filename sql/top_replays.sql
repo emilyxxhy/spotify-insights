@@ -1,0 +1,2 @@
+SELECT trackName, artistName, COUNT(*) AS play_sessions, ROUND(SUM(msPlayed)/60000.0,1) AS minutes_listened
+FROM listens GROUP BY trackName, artistName HAVING play_sessions >= 3 ORDER BY play_sessions DESC, minutes_listened DESC LIMIT 50;
